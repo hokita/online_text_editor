@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>online text editor</title>
+  </head>
+  <body>
+    <h1>online text editor</h1>
+    <div id="error"></div>
+    <textarea id="onlinetext" rows="30" cols="50" >{{.Text}}</textarea>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+    </script>
+    <script>
+      $(function(){
+        var socket = null;
+        var onlinetext = $("#onlinetext")
+        var error = $("#error")
+        $(document).on('keyup', '#onlinetext', function(e) {
+          socket.send(onlinetext.val())
+        });
+
+        if (!window["WebSocket"]) {
+          error.text("WebSocketに対応していないブラウザです。")
+        } else {
+          socket = new WebSocket("ws://{{.Host}}/ws")
+          socket.onclose = function() {
+            error.text("接続が切断されました。Reloadしてください。")
+          }
+          socket.onmessage = function(e) {
+            onlinetext.val(e.data)
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
